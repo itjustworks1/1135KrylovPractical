@@ -1,0 +1,6 @@
+@_1135KrylovPracticalAPI_HostAddress = http://localhost:5103
+
+GET {{_1135KrylovPracticalAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
