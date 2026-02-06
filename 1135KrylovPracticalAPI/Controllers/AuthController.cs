@@ -15,7 +15,14 @@ public class AuthController : Controller
     [HttpPost("auth/login")]
     public ActionResult Login(string username, string password)
     {
-        
+        try
+        {
+
+        }
+        catch (Exception e)
+        {
+            return Unauthorized(e.Message);
+        }
         return View();
     }
 

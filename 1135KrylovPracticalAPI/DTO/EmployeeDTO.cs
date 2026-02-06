@@ -16,4 +16,8 @@ public class EmployeeDTO
 
     public bool IsActive { get; set; }
     public Role? Role { get; set; }
+    
+    public string Username { get; set; } = null!;
+
+    public string PasswordHash { get; set; } = null!;
 }

@@ -37,6 +37,8 @@ public class EmployeesController : Controller
     public ActionResult<EmployeeDTO> EmployeeOnId(int id)
     {
         Employee employee = db.Employees.FirstOrDefault(x => x.Id == id);
+        if (employee == null)
+            return NotFound();
         return Ok(new EmployeeDTO()
         {
             Id = employee.Id,
@@ -50,24 +52,60 @@ public class EmployeesController : Controller
     }
     
     [HttpPost("employees")]
-    public ActionResult AddEmployee()
+    public ActionResult AddEmployee(EmployeeDTO employeeDTO)
     {
-        
-        return View();
+        if (db.Credentials.FirstOrDefault(x => x.Username == employeeDTO.Username) != null)
+            return BadRequest();
+        db.Add(new Employee()
+        {
+            FirstName =  employeeDTO.FirstName,
+            LastName =  employeeDTO.LastName,
+            Position =  employeeDTO.Position,
+            HireDate =  employeeDTO.HireDate,
+            IsActive =  employeeDTO.IsActive
+        });
+        Credential credential = new Credential()
+        {
+            Username = employeeDTO.Username,
+            EmployeeId =  employeeDTO.Id,
+            PasswordHash = employeeDTO.PasswordHash,
+            RoleId = employeeDTO.Role.Id
+        };
+        db.Credentials.Add(credential);
+        db.SaveChanges();
+        return Created($"/api/employees/{employeeDTO}", credential);
     }
     
     [HttpPut("employees/{id}")]
-    public ActionResult UpdateEmployee()
+    public ActionResult UpdateEmployee(int id, EmployeeDTO employeeDTO)
     {
-        
-        return View();
+        db.Employees.Update(new Employee()
+        {
+            Id =  id,
+            FirstName = employeeDTO.FirstName,
+            LastName = employeeDTO.LastName,
+            Position =  employeeDTO.Position,
+            HireDate =  employeeDTO.HireDate,
+            IsActive =  employeeDTO.IsActive
+        });
+        db.SaveChanges();
+        return Ok();
     }
     
     [HttpDelete("employees/{id}")]
-    public ActionResult DeleteEmployee()
+    public ActionResult DeleteEmployee(int id)
     {
-        
-        return View();
+        try
+        {
+            db.Employees.Remove(db.Employees.First(x => x.Id == id));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        db.SaveChanges();
+        return NoContent();
     }
 
 }
