@@ -77,7 +77,7 @@ public partial class _1135krylovPracticalContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("Role");
+            entity.ToTable("RoleId");
 
             entity.Property(e => e.Id).HasColumnType("int(11)");
             entity.Property(e => e.Title).HasMaxLength(20);

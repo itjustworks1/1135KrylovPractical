@@ -13,27 +13,33 @@ public class EmployeesController : Controller
     {
         this.db = db;
     }
-    [HttpGet("employees")]
+    [HttpGet]
     public ActionResult<List<EmployeeDTO>> Employees()
     {
-        List<EmployeeDTO> list = new List<EmployeeDTO>();
+        List<EmployeeRoleDTO> list = new List<EmployeeRoleDTO>();
         foreach (Employee employee in db.Employees)
         {
-            list.Add(new EmployeeDTO()
+            list.Add(new EmployeeRoleDTO
             {
-                Id = employee.Id,
-                FirstName = employee.FirstName,
-                LastName = employee.LastName,
-                Position =  employee.Position,
-                HireDate =  employee.HireDate,
-                IsActive =  employee.IsActive,
-                Role = db.Credentials.FirstOrDefault(x => x.EmployeeId == employee.Id).Role
+                employee = new EmployeeDTO
+                {
+                    Id = employee.Id,
+                    FirstName = employee.FirstName,
+                    LastName = employee.LastName,
+                    Position =  employee.Position,
+                    HireDate =  employee.HireDate,
+                    IsActive =  employee.IsActive,
+                },
+                role = new RoleDTO
+                {
+                    Title = db.Credentials.FirstOrDefault(x => x.EmployeeId == employee.Id).Role.Title
+                }
             });
         }
         return Ok(list);
     }
     
-    [HttpGet("employees/{id}")]
+    [HttpGet("{id}")]
     public ActionResult<EmployeeDTO> EmployeeOnId(int id)
     {
         Employee employee = db.Employees.FirstOrDefault(x => x.Id == id);
@@ -46,58 +52,65 @@ public class EmployeesController : Controller
             LastName = employee.LastName,
             Position =  employee.Position,
             HireDate =  employee.HireDate,
-            IsActive =  employee.IsActive,
-            Role = db.Credentials.FirstOrDefault(x => x.EmployeeId == employee.Id).Role
+            IsActive =  employee.IsActive
         });
     }
     
-    [HttpPost("employees")]
-    public ActionResult AddEmployee(EmployeeDTO employeeDTO)
+    [HttpPost]
+    public ActionResult AddEmployee(CreateEmployeeDTO createEmployeeDto)
     {
-        if (db.Credentials.FirstOrDefault(x => x.Username == employeeDTO.Username) != null)
+        if (db.Credentials.FirstOrDefault(x => x.Username == createEmployeeDto.credential.Username) != null)
             return BadRequest();
-        db.Add(new Employee()
+        Employee employee = new Employee
         {
-            FirstName =  employeeDTO.FirstName,
-            LastName =  employeeDTO.LastName,
-            Position =  employeeDTO.Position,
-            HireDate =  employeeDTO.HireDate,
-            IsActive =  employeeDTO.IsActive
-        });
-        Credential credential = new Credential()
+            FirstName =  createEmployeeDto.employee.FirstName,
+            LastName =  createEmployeeDto.employee.LastName,
+            Position =  createEmployeeDto.employee.Position,
+            HireDate =  createEmployeeDto.employee.HireDate,
+            IsActive =  createEmployeeDto.employee.IsActive
+        };
+        db.Employees.Add(employee);
+        db.SaveChanges();
+        Credential credential = new Credential
         {
-            Username = employeeDTO.Username,
-            EmployeeId =  employeeDTO.Id,
-            PasswordHash = employeeDTO.PasswordHash,
-            RoleId = employeeDTO.Role.Id
+            Username = createEmployeeDto.credential.Username,
+            EmployeeId = db.Employees.Last().Id,
+            PasswordHash = createEmployeeDto.credential.PasswordHash,
+            RoleId = createEmployeeDto.credential.RoleId
         };
         db.Credentials.Add(credential);
         db.SaveChanges();
-        return Created($"/api/employees/{employeeDTO}", credential);
+        Credential credential1 = db.Credentials.Last();
+        CredentialDTO credentialDto = new CredentialDTO
+        {
+            EmployeeId = credential1.EmployeeId,
+            Username = credential1.Username,
+            PasswordHash = credential1.PasswordHash,
+            RoleId = credential1.RoleId
+        };
+            
+        return Created( "",credentialDto);
     }
     
-    [HttpPut("employees/{id}")]
+    [HttpPut("{id}")]
     public ActionResult UpdateEmployee(int id, EmployeeDTO employeeDTO)
     {
-        db.Employees.Update(new Employee()
-        {
-            Id =  id,
-            FirstName = employeeDTO.FirstName,
-            LastName = employeeDTO.LastName,
-            Position =  employeeDTO.Position,
-            HireDate =  employeeDTO.HireDate,
-            IsActive =  employeeDTO.IsActive
-        });
+        Employee employee = db.Employees.FirstOrDefault(x => x.Id == id);
+        employee.FirstName = employeeDTO.FirstName;
+        employee.LastName = employeeDTO.LastName;
+        employee.Position = employeeDTO.Position;
+        employee.HireDate = employeeDTO.HireDate;
+        employee.IsActive = employeeDTO.IsActive;
         db.SaveChanges();
         return Ok();
     }
     
-    [HttpDelete("employees/{id}")]
+    [HttpDelete("{id}")]
     public ActionResult DeleteEmployee(int id)
     {
         try
         {
-            db.Employees.Remove(db.Employees.First(x => x.Id == id));
+            db.Employees.Remove(db.Employees.FirstOrDefault(x => x.Id == id));
         }
         catch (Exception e)
         {

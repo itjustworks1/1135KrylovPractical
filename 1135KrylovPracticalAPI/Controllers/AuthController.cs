@@ -12,7 +12,7 @@ public class AuthController : Controller
     {
         this.db = db;
     }
-    [HttpPost("auth/login")]
+    [HttpPost("login")]
     public ActionResult Login(string username, string password)
     {
         try
@@ -26,17 +26,26 @@ public class AuthController : Controller
         return View();
     }
 
-    [HttpPost("auth/profile")]
+    [HttpPost("profile")]
     public ActionResult<EmployeeDTO> Profile(int id)
     {
         Employee employee = db.Employees.FirstOrDefault(x => x.Id == id);
-        return Ok( new EmployeeDTO()
+        return Ok(new EmployeeRoleDTO
             {
-                Id = employee.Id, FirstName = employee.FirstName, LastName = employee.LastName,
-                Position = employee.Position,
-                Role = db.Credentials.FirstOrDefault(x => x.EmployeeId == employee.Id).Role
-            }
-        );
+                employee = new EmployeeDTO
+                {
+                    Id = employee.Id,
+                    FirstName = employee.FirstName,
+                    LastName = employee.LastName,
+                    Position =  employee.Position,
+                    HireDate =  employee.HireDate,
+                    IsActive =  employee.IsActive,
+                },
+                role = new RoleDTO
+                {
+                    Title = db.Credentials.FirstOrDefault(x => x.EmployeeId == employee.Id).Role.Title
+                }
+            });
     }
     
     
