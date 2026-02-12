@@ -3,7 +3,13 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="1135KrylovPractical/App.axaml" value="1135KrylovPractical/1135KrylovPractical.csproj" />
+        <entry key="1135KrylovPractical/Views/EmployeeEditorView.axaml" value="1135KrylovPractical/1135KrylovPractical.csproj" />
+        <entry key="1135KrylovPractical/Views/EmployeesView.axaml" value="1135KrylovPractical/1135KrylovPractical.csproj" />
+        <entry key="1135KrylovPractical/Views/LoginWindow.axaml" value="1135KrylovPractical/1135KrylovPractical.csproj" />
         <entry key="1135KrylovPractical/Views/MainWindow.axaml" value="1135KrylovPractical/1135KrylovPractical.csproj" />
+        <entry key="1135KrylovPractical/Views/ShiftEditorView.axaml" value="1135KrylovPractical/1135KrylovPractical.csproj" />
+        <entry key="1135KrylovPractical/Views/ShiftsView.axaml" value="1135KrylovPractical/1135KrylovPractical.csproj" />
       </map>
     </option>
   </component>

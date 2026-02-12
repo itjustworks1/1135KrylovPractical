@@ -1,6 +1,8 @@
-﻿namespace _1135KrylovPractical.ViewModels;
+﻿using _1135KrylovPractical.Tools;
 
-public partial class MainWindowViewModel : ViewModelBase
+namespace _1135KrylovPractical.ViewModels;
+
+public partial class MainWindowViewModel : BaseVM
 {
     public string Greeting { get; } = "Welcome to Avalonia!";
 }
